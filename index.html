@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FalaAí English — Memorizar, Praticar e Conversar</title>
+    <meta name="description" content="Aprenda inglês de forma progressiva: memorize as 3.000 palavras mais frequentes, pratique completando frases e treine conversação com áudio.">
+    <meta name="theme-color" content="#3d1a0a">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="FalaAí English">
+    <meta property="og:description" content="Memorize, pratique e converse em inglês — tudo em um só app.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="pt_BR">
+
+    <!-- Twitter/X -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="FalaAí English">
+    <meta name="twitter:description" content="Memorize, pratique e converse em inglês — tudo em um só app.">
+
+    <link rel="manifest" href="assets/manifest.json">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="FalaAí English">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #3d1a0a 0%, #2a0f05 50%, #1a0802 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 10px;
+            padding-top: 20px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .container {
+            background: #fffaf5;
+            border-radius: 28px;
+            padding: 20px;
+            max-width: 480px;
+            width: 100%;
+            min-height: 90vh;
+            box-shadow: 0 20px 60px rgba(200, 90, 30, 0.35);
+            position: relative;
+            border: 1px solid rgba(200, 90, 30, 0.12);
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f5e6d8;
+            gap: 8px;
+        }
+        .header h1 { font-size: 20px; color: #3d1a0a; white-space: nowrap; }
+        .header h1 span {
+            background: linear-gradient(135deg, #e07b39, #d4a017);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        .header .info-btn {
+            background: #fef0e2;
+            border: 1.5px solid #f0dcc8;
+            color: #b84a1f;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .header .info-btn:hover { background: #f5e6d8; }
+        .header .info-btn:active { transform: scale(0.95); }
+
+        /* Menu Principal */
+        .main-menu { display: flex; gap: 8px; margin: 15px 0; }
+        .main-menu button {
+            flex: 1;
+            padding: 12px 6px;
+            border: none;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            text-align: center;
+            min-width: 0;
+        }
+        .main-menu button .icon { font-size: 20px; }
+        .main-menu button .sub { font-size: 10px; font-weight: 400; opacity: 0.85; }
+        .main-menu .btn-memorize { background: linear-gradient(135deg, #b84a1f, #8a3512); }
+        .main-menu .btn-memorize.active { box-shadow: 0 0 0 3px #fff, 0 0 0 6px #b84a1f; }
+        .main-menu .btn-practice { background: linear-gradient(135deg, #e07b39, #d4a017); }
+        .main-menu .btn-practice.active { box-shadow: 0 0 0 3px #fff, 0 0 0 6px #e07b39; }
+        .main-menu .btn-conversation { background: linear-gradient(135deg, #c0392b, #7b241c); }
+        .main-menu .btn-conversation.active { box-shadow: 0 0 0 3px #fff, 0 0 0 6px #c0392b; }
+
+        /* MEMORIZAR */
+        .memorize-container { display: none; }
+        .memorize-container.active { display: block; }
+        #memorizeList {
+            max-height: 320px;
+            overflow-y: auto;
+            min-height: 200px;
+            padding-right: 6px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .word-card {
+            background: #fdf3ea;
+            border-radius: 16px;
+            padding: 16px 18px;
+            margin: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+            min-height: 56px;
+            gap: 10px;
+        }
+        .word-card:active { transform: scale(0.97); }
+        .word-card .english {
+            font-size: 20px; font-weight: 600; color: #3d1a0a;
+            flex: 1; text-align: left; overflow-wrap: anywhere;
+        }
+        .word-card .portuguese {
+            font-size: 17px; color: #8a6a55;
+            flex: 1; text-align: right; overflow-wrap: anywhere;
+        }
+        .word-card .audio-btn {
+            background: #e07b39; border: none; border-radius: 50%;
+            width: 40px; height: 40px; font-size: 16px; cursor: pointer;
+            color: white; flex-shrink: 0; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .word-card .audio-btn:active { transform: scale(0.9); }
+
+        /* Paginação */
+        .pager {
+            margin: 18px 0 5px;
+            background: #fef0e2;
+            border: 1.5px solid #f0dcc8;
+            border-radius: 16px;
+            padding: 12px;
+        }
+        .pager-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr 1fr 1fr;
+            gap: 8px;
+            align-items: stretch;
+        }
+        .pager button {
+            border: none; border-radius: 12px; padding: 12px 6px;
+            font-size: 13px; font-weight: 700; color: white; cursor: pointer;
+            transition: all 0.2s; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 2px;
+            min-height: 52px; font-family: inherit; min-width: 0;
+        }
+        .pager button:active { transform: scale(0.95); }
+        .pager button:disabled { opacity: 0.35; cursor: not-allowed; }
+        .pager button .btn-icon { font-size: 16px; line-height: 1; }
+        .pager button .btn-label { font-size: 10px; font-weight: 600; opacity: 0.95; }
+        .pager .pager-go { background: linear-gradient(135deg, #e07b39, #d4a017); }
+        .pager .pager-prev { background: linear-gradient(135deg, #b84a1f, #8a3512); }
+        .pager .pager-next { background: linear-gradient(135deg, #d4a017, #b8860b); }
+        .pager-field {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: white; border: 2px solid #f0dcc8; border-radius: 12px;
+            padding: 4px 6px; min-height: 52px; gap: 2px; min-width: 0;
+        }
+        .pager-field label {
+            font-size: 9px; font-weight: 700; color: #b84a1f;
+            text-transform: uppercase; letter-spacing: 0.3px;
+        }
+        .pager-field input[type="number"] {
+            width: 100%; border: none; background: transparent;
+            font-size: 17px; font-weight: 700; color: #3d1a0a;
+            text-align: center; font-family: inherit; outline: none;
+            padding: 0; -moz-appearance: textfield; line-height: 1.2; min-width: 0;
+        }
+        .pager-field input[type="number"]::-webkit-outer-spin-button,
+        .pager-field input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none; margin: 0;
+        }
+        .pager-field:focus-within {
+            border-color: #e07b39;
+            box-shadow: 0 0 0 3px rgba(224, 123, 57, 0.15);
+        }
+        .pager-info {
+            text-align: center; margin-top: 8px;
+            font-size: 12px; color: #a07050; font-weight: 600;
+        }
+        .empty-range {
+            text-align: center; padding: 30px 15px; color: #b09070;
+            font-size: 14px; background: #fdf3ea; border-radius: 16px;
+        }
+
+        /* PRATICAR */
+        .practice-container { display: none; }
+        .practice-container.active { display: block; }
+        .practice-sentence {
+            background: #fdf3ea; border-radius: 20px; padding: 25px 20px;
+            margin: 10px 0; text-align: center; font-size: 22px;
+            font-weight: 500; color: #3d1a0a; line-height: 1.8;
+            min-height: 110px; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; overflow-wrap: anywhere;
+        }
+        .practice-sentence .sentence-text { word-break: break-word; }
+        .practice-sentence .blank {
+            display: inline-block; min-width: 90px;
+            border-bottom: 3px solid #e07b39; color: #e07b39;
+            font-weight: 700; padding: 0 8px;
+        }
+        .practice-sentence .blank.correct { color: #4c8c2a; border-bottom-color: #4c8c2a; }
+        .practice-sentence .blank.wrong { color: #c0392b; border-bottom-color: #c0392b; }
+        .practice-options {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 10px; margin: 12px 0;
+        }
+        .practice-options button {
+            padding: 14px; border: 2px solid #f0dcc8; border-radius: 14px;
+            background: white; font-size: 17px; font-weight: 500;
+            cursor: pointer; transition: all 0.2s; color: #3d1a0a;
+            overflow-wrap: anywhere;
+        }
+        .practice-options button:active { transform: scale(0.95); }
+        .practice-options button:disabled { cursor: not-allowed; opacity: 0.6; }
+        .practice-options button.correct { border-color: #4c8c2a; background: #eaf5e0; color: #2d6b17; }
+        .practice-options button.wrong { border-color: #c0392b; background: #fde8e4; color: #a03020; }
+        .practice-options button.show-correct { border-color: #4c8c2a; background: #eaf5e0; color: #2d6b17; }
+        .practice-options.hidden { display: none; }
+        .practice-controls {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 10px; margin: 12px 0;
+        }
+        .practice-controls button {
+            padding: 12px 10px; border: none; border-radius: 14px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s; color: white; min-width: 60px;
+        }
+        .practice-controls button:active { transform: scale(0.95); }
+        .practice-controls .listen-btn { background: #e07b39; }
+        .practice-controls .listen-btn:hover { background: #c96830; }
+        .practice-controls .reveal-btn { background: #c0392b; }
+        .practice-controls .reveal-btn.active { background: #e07b39; }
+        .practice-translation {
+            background: #fef0e2; border-radius: 16px; padding: 15px 18px;
+            margin: 12px 0; display: none; text-align: left;
+        }
+        .practice-translation.open { display: block; }
+        .practice-translation .pt { font-size: 16px; color: #3d1a0a; }
+        .practice-translation .pt strong { color: #e07b39; }
+        .practice-translation .en { font-size: 15px; color: #8a6a55; font-style: italic; margin-top: 4px; }
+        .practice-translation .word-meaning {
+            margin-top: 8px; padding-top: 8px;
+            border-top: 1px solid #ead5c0; font-size: 14px; color: #4a2a15;
+        }
+        .practice-translation .word-meaning strong { color: #e07b39; }
+        .practice-feedback {
+            text-align: center; font-size: 19px; font-weight: 700;
+            padding: 10px; border-radius: 14px; margin: 10px 0; display: none;
+        }
+        .practice-feedback.correct { display: block; color: #2d6b17; background: #eaf5e0; }
+        .practice-feedback.wrong { display: block; color: #a03020; background: #fde8e4; }
+
+        /* CONVERSAÇÃO */
+        .conversation-container { display: none; }
+        .conversation-container.active { display: block; }
+        .conversation-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 12px; flex-wrap: wrap; gap: 8px;
+        }
+        .conversation-header .title { font-size: 16px; font-weight: 700; color: #3d1a0a; }
+        .conversation-header .badge {
+            background: #fef0e2; color: #b84a1f; padding: 4px 12px;
+            border-radius: 20px; font-size: 12px; font-weight: 600;
+        }
+        .conversation-text {
+            background: #fdf3ea; border-radius: 20px; padding: 20px;
+            margin: 10px 0; max-height: 320px; overflow-y: auto;
+            min-height: 200px; -webkit-overflow-scrolling: touch;
+        }
+        .conversation-line {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 14px; margin: 4px 0; border-radius: 12px;
+            background: white; border-left: 4px solid #f0dcc8;
+            transition: all 0.3s; gap: 10px; cursor: pointer; min-height: 48px;
+        }
+        .conversation-line:active { transform: scale(0.98); }
+        .conversation-line.active { border-left-color: #e07b39; background: #fff4e8; }
+        .conversation-line .english-text {
+            font-size: 17px; font-weight: 500; color: #3d1a0a;
+            flex: 1; text-align: left; overflow-wrap: anywhere;
+        }
+        .conversation-line .portuguese-text {
+            font-size: 14px; color: #a07050; flex: 1;
+            text-align: right; display: none; overflow-wrap: anywhere;
+        }
+        .conversation-line .portuguese-text.show { display: block; }
+        .conversation-line .line-audio {
+            background: #e07b39; border: none; border-radius: 50%;
+            width: 36px; height: 36px; font-size: 14px; cursor: pointer;
+            color: white; flex-shrink: 0; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .conversation-line .line-audio:active { transform: scale(0.9); }
+        .conversation-line .line-audio.playing {
+            background: #c0392b;
+            animation: pulse-audio 0.8s ease-in-out infinite;
+        }
+        @keyframes pulse-audio {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .conversation-controls {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 10px; margin: 12px 0;
+        }
+        .conversation-controls button {
+            padding: 12px 10px; border: none; border-radius: 14px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s; color: white; min-width: 60px;
+        }
+        .conversation-controls button:active { transform: scale(0.95); }
+        .conversation-controls .play-all { background: #e07b39; }
+        .conversation-controls .play-all:hover { background: #c96830; }
+        .conversation-controls .toggle-translation-btn { background: #c0392b; }
+        .conversation-controls .toggle-translation-btn.active { background: #e07b39; }
+
+        /* ===== PAINEL DE INFORMAÇÕES ===== */
+        .info-overlay {
+            position: fixed; inset: 0; background: rgba(20, 8, 2, 0.6);
+            backdrop-filter: blur(3px); display: none;
+            justify-content: center; align-items: flex-end;
+            z-index: 1000; padding: 0;
+        }
+        .info-overlay.open { display: flex; }
+        .info-panel {
+            background: #fffaf5; width: 100%; max-width: 480px;
+            max-height: 88vh; border-radius: 24px 24px 0 0;
+            padding: 22px 20px 30px; overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease; position: relative;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(40px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+        .info-panel h2 { font-size: 20px; color: #3d1a0a; margin-bottom: 6px; }
+        .info-panel h3 {
+            font-size: 15px; color: #b84a1f; margin: 18px 0 6px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .info-panel p, .info-panel li {
+            font-size: 14px; line-height: 1.55; color: #4a2a15; margin-bottom: 8px;
+        }
+        .info-panel ul { padding-left: 20px; }
+        .info-panel li { margin-bottom: 4px; }
+        .info-panel strong { color: #b84a1f; }
+        .info-panel .close-info {
+            position: sticky; top: 0; float: right;
+            background: #c0392b; color: white; border: none; border-radius: 50%;
+            width: 34px; height: 34px; font-size: 16px; cursor: pointer;
+            margin-left: 8px;
+        }
+        .info-panel .legal-note {
+            margin-top: 18px; padding-top: 14px;
+            border-top: 1px dashed #e8d2bc;
+            font-size: 12px; color: #8a6a55; line-height: 1.5;
+        }
+        .info-panel .legal-note strong { color: #a03020; }
+        .info-panel .badge-version {
+            display: inline-block; background: #fef0e2; color: #b84a1f;
+            font-size: 11px; font-weight: 700; padding: 2px 8px;
+            border-radius: 10px; margin-left: 6px;
+        }
+        .info-panel .repeat-highlight {
+            background: #fff4e8; border-left: 4px solid #e07b39;
+            padding: 10px 14px; border-radius: 8px; margin: 10px 0;
+            font-size: 14px; color: #4a2a15;
+        }
+
+        @media (max-width: 420px) {
+            .container { padding: 15px; border-radius: 20px; }
+            .main-menu button { font-size: 11px; padding: 10px 4px; }
+            .main-menu button .icon { font-size: 18px; }
+            .word-card .english { font-size: 17px; }
+            .word-card .portuguese { font-size: 15px; }
+            .practice-sentence { font-size: 19px; padding: 18px; min-height: 90px; }
+            .practice-options button { font-size: 15px; padding: 12px; }
+            .conversation-line .english-text { font-size: 15px; }
+            .conversation-text { padding: 15px; max-height: 250px; }
+            #memorizeList { max-height: 250px; }
+            .pager button { padding: 10px 4px; min-height: 48px; }
+            .pager button .btn-label { font-size: 9px; }
+            .pager-field { min-height: 48px; }
+            .pager-field input[type="number"] { font-size: 15px; }
+            .header .info-btn span { display: none; }
+        }
+
+        @media (max-width: 360px) {
+            .practice-options { grid-template-columns: 1fr; }
+            .main-menu { flex-direction: column; }
+            .main-menu button { flex-direction: row; justify-content: center; gap: 8px; padding: 10px; }
+            .pager-grid { grid-template-columns: 1fr 1fr; }
+            .practice-sentence { font-size: 17px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #f5e6d8; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #e07b39; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app">
+    <div class="header">
+        <h1> FalaAí <span>English</span></h1>
+        <button class="info-btn" onclick="openInfo()" aria-label="Informações sobre o app">
+            ℹ️ <span>Info</span>
+        </button>
+    </div>
+
+    <div class="main-menu">
+        <button class="btn-memorize active" id="btnMemorize" onclick="switchMode('memorize')" aria-label="Modo memorizar">
+            <span class="icon">📚</span> Memorizar <span class="sub">10 por vez</span>
+        </button>
+        <button class="btn-practice" id="btnPractice" onclick="switchMode('practice')" aria-label="Modo praticar">
+            <span class="icon">🎯</span> Praticar <span class="sub">Complete</span>
+        </button>
+        <button class="btn-conversation" id="btnConversation" onclick="switchMode('conversation')" aria-label="Modo conversação">
+            <span class="icon">💬</span> Conversação <span class="sub">Texto & Áudio</span>
+        </button>
+    </div>
+
+    <!-- MEMORIZAR -->
+    <div class="memorize-container active" id="memorizeContainer">
+        <div id="memorizeList"></div>
+        <div class="pager">
+            <div class="pager-grid">
+                <div class="pager-field">
+                    <label for="memorizePageInput">Página</label>
+                    <input type="number" id="memorizePageInput" min="1" value="1"
+                           onkeydown="handlePagerKeydown(event, 'memorize')"
+                           onchange="onPagerInputChange('memorize')">
+                </div>
+                <button class="pager-go" onclick="goToTypedPage('memorize')" title="Ir para a página digitada">
+                    <span class="btn-icon">🎯</span><span class="btn-label">Ir para</span>
+                </button>
+                <button class="pager-prev" id="memorizePrevBtn" onclick="prevMemorizePage()" title="Página anterior">
+                    <span class="btn-icon">◀</span><span class="btn-label">Voltar</span>
+                </button>
+                <button class="pager-next" id="memorizeNextBtn" onclick="nextMemorizePage()" title="Próxima página">
+                    <span class="btn-icon">▶</span><span class="btn-label">Próximo</span>
+                </button>
+            </div>
+            <div class="pager-info" id="memorizePageInfo">Página 1 de 1</div>
+        </div>
+    </div>
+
+    <!-- PRATICAR -->
+    <div class="practice-container" id="practiceContainer">
+        <div class="practice-sentence" id="practiceSentence">
+            <div class="sentence-text">
+                <span id="practicePrefix"></span>
+                <span class="blank" id="practiceBlank">_______</span>
+                <span id="practiceSuffix"></span>
+            </div>
+        </div>
+        <div class="practice-feedback" id="practiceFeedback" role="status" aria-live="polite"></div>
+
+        <div class="practice-options" id="practiceOptions"></div>
+
+        <div class="practice-translation" id="practiceTranslation">
+            <div class="pt"><strong>🇧🇷 Português:</strong> <span id="practicePt">---</span></div>
+            <div class="en"><strong>🇬🇧 Inglês:</strong> <span id="practiceEn">---</span></div>
+            <div class="word-meaning"><strong>📝 Significado:</strong> <span id="practiceMeaning">---</span></div>
+        </div>
+
+        <div class="practice-controls">
+            <button class="listen-btn" onclick="playPracticePhrase()">🔊 Ouvir</button>
+            <button class="reveal-btn" id="practiceRevealBtn" onclick="togglePracticeTranslation()">📖 Tradução</button>
+        </div>
+
+        <div class="pager">
+            <div class="pager-grid">
+                <div class="pager-field">
+                    <label for="practicePageInput">Palavra</label>
+                    <input type="number" id="practicePageInput" min="1" value="1"
+                           onkeydown="handlePagerKeydown(event, 'practice')"
+                           onchange="onPagerInputChange('practice')">
+                </div>
+                <button class="pager-go" onclick="goToTypedPage('practice')" title="Ir para a palavra digitada">
+                    <span class="btn-icon">🎯</span><span class="btn-label">Ir para</span>
+                </button>
+                <button class="pager-prev" id="practicePrevPageBtn" onclick="prevPracticePage()" title="Palavra anterior">
+                    <span class="btn-icon">◀</span><span class="btn-label">Voltar</span>
+                </button>
+                <button class="pager-next" id="practiceNextPageBtn" onclick="nextPracticePage()" title="Próxima palavra">
+                    <span class="btn-icon">▶</span><span class="btn-label">Próximo</span>
+                </button>
+            </div>
+            <div class="pager-info" id="practicePageInfo">Palavra 1 de 1</div>
+        </div>
+    </div>
+
+    <!-- CONVERSAÇÃO -->
+    <div class="conversation-container" id="conversationContainer">
+        <div class="conversation-header">
+            <span class="title" id="convTitle">📖 Texto 1</span>
+            <span class="badge" id="convBadge">1 / 3</span>
+        </div>
+        <div class="conversation-text" id="conversationText"></div>
+        <div class="conversation-controls">
+            <button class="play-all" onclick="playAllConversation()">▶️ Ouvir Tudo</button>
+            <button class="toggle-translation-btn" id="convToggleTranslation" onclick="toggleConversationTranslation()">🇧🇷 Tradução</button>
+        </div>
+        <div class="pager">
+            <div class="pager-grid">
+                <div class="pager-field">
+                    <label for="conversationPageInput">Texto</label>
+                    <input type="number" id="conversationPageInput" min="1" value="1"
+                           onkeydown="handlePagerKeydown(event, 'conversation')"
+                           onchange="onPagerInputChange('conversation')">
+                </div>
+                <button class="pager-go" onclick="goToTypedPage('conversation')" title="Ir para o texto digitado">
+                    <span class="btn-icon">🎯</span><span class="btn-label">Ir para</span>
+                </button>
+                <button class="pager-prev" id="conversationPrevBtn" onclick="prevConversation()" title="Texto anterior">
+                    <span class="btn-icon">◀</span><span class="btn-label">Voltar</span>
+                </button>
+                <button class="pager-next" id="conversationNextBtn" onclick="nextConversation()" title="Próximo texto">
+                    <span class="btn-icon">▶</span><span class="btn-label">Próximo</span>
+                </button>
+            </div>
+            <div class="pager-info" id="conversationPageInfo">Texto 1 de 3</div>
+        </div>
+    </div>
+
+    <!-- Rodapé discreto -->
+    <div style="text-align:center;margin-top:14px;">
+        <button onclick="openInfo()" style="background:none;border:none;color:#a07050;font-size:12px;text-decoration:underline;cursor:pointer;font-family:inherit;">
+            Sobre o app · Privacidade · Aviso legal
+        </button>
+    </div>
+</div>
+
+<!-- ============================================
+     PAINEL DE INFORMAÇÕES
+     ============================================ -->
+<div class="info-overlay" id="infoOverlay" onclick="if(event.target===this) closeInfo()">
+    <div class="info-panel" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+        <button class="close-info" onclick="closeInfo()" aria-label="Fechar">✕</button>
+
+        <h2 id="infoTitle">ℹ️ Sobre o FalaAí English</h2>
+        <p><span class="badge-version">v1.0</span> Um app gratuito para aprender as palavras mais usadas do inglês com método, áudio e prática ativa.</p>
+
+        <h3>🎯 Por que este método funciona</h3>
+        <p>O FalaAí English combina três pilares da aquisição de línguas: <strong>frequência lexical</strong>, <strong>prática contextualizada</strong> e <strong>imersão auditiva</strong>.</p>
+        <ul>
+            <li><strong>Memorização (3.000 palavras mais frequentes)</strong> — segundo estudos linguísticos, essas palavras cobrem cerca de <strong>95% das conversações cotidianas</strong>. Exibidas em blocos de 10 por tela, com áudio de pronúncia por toque, permitem estudo autônomo e aquisição lexical sistemática.</li>
+            <li><strong>Prática</strong> — você ouve frases contextualizadas com lacunas e escolhe a palavra correta, ampliando o vocabulário em uso real e a compreensão auditiva.</li>
+            <li><strong>Conversação</strong> — textos curtos divididos em frases, com áudio individual e repetição ativa em voz alta, estimulando pronúncia, fluência e memorização por imersão auditiva.</li>
+        </ul>
+
+        <h3>🚀 Como usar para máxima otimização</h3>
+        <ul>
+            <li><strong>Memorizar:</strong> ouça cada palavra tocando no 🔊 e repita em voz alta antes de avançar de página. Meta: 1 bloco de 10 palavras por sessão.</li>
+            <li><strong>Praticar:</strong> tente responder <em>sem</em> abrir a tradução. Se errar, ouça a frase novamente e leia o significado.</li>
+            <li><strong>Conversação:</strong> <strong>repita cada frase em voz alta</strong> após o áudio — esse é o passo mais importante. Use "Ouvir Tudo" e acompanhe em voz alta.</li>
+            <li>Estude <strong>10–15 minutos por dia</strong>. Consistência vale mais que sessões longas.</li>
+            <li>Revisite páginas anteriores após 2–3 dias para reforçar a memória de longo prazo.</li>
+        </ul>
+
+        <div class="repeat-highlight">
+            🗣️ <strong>Dica de ouro:</strong> no módulo <strong>Conversação</strong>, repetir em voz alta após cada frase é o que mais acelera a fluência. Não pule essa etapa!
+        </div>
+
+        <h3>🔒 Privacidade e seus dados</h3>
+        <ul>
+            <li><strong>Não coletamos dados pessoais.</strong> Nenhum nome, e-mail, localização ou identificador é armazenado.</li>
+            <li><strong>Não usamos cookies de rastreamento</strong> nem analytics de terceiros.</li>
+            <li><strong>Não há login</strong> — o app funciona 100% no seu navegador.</li>
+            <li>O áudio usa a <strong>síntese de voz nativa do seu dispositivo</strong> (Web Speech API); nenhum áudio é enviado a servidores.</li>
+            <li>Preferências de estudo ficam apenas na memória da sessão e são descartadas ao fechar a aba.</li>
+        </ul>
+
+        <h3>⚖️ Aviso legal</h3>
+        <p>Este aplicativo é oferecido <strong>"como está"</strong>, sem garantias de qualquer tipo, expressas ou implícitas, incluindo, mas não se limitando a, garantias de adequação a um propósito específico ou de não violação de direitos de terceiros.</p>
+        <p>O conteúdo é <strong>exclusivamente educacional</strong> e não substitui aulas, professores ou materiais didáticos formais. O autor não se responsabiliza por decisões tomadas com base no conteúdo.</p>
+        <p>As <strong>3.000 palavras e as frases</strong> foram selecionadas por critérios de frequência de uso na língua inglesa; a referência aos "95% das conversações cotidianas" é baseada em estudos linguísticos amplamente citados (ex.: listas de frequência como as de Nation &amp; Heatley) e pode variar conforme o corpus.</p>
+        <p>Marca, layout, código e textos são de propriedade do autor. É proibida a reprodução comercial sem autorização. O uso pessoal e educacional é livre.</p>
+
+        <div class="legal-note">
+            <strong>LGPD (Lei nº 13.709/2018):</strong> este app não trata dados pessoais, portanto não há necessidade de consentimento, cadastro ou canal de exclusão de dados. Em caso de dúvidas, o usuário pode simplesmente fechar o app — nenhum dado é retido.
+            <br><br>
+            <strong>Isenção de responsabilidade:</strong> o uso do app é de responsabilidade exclusiva do usuário. O autor não garante resultados específicos de aprendizado.
+            <br><br>
+            © 2025 FalaAí English. Todos os direitos reservados.
+        </div>
+    </div>
+</div>
+
+<script>
+// ============================================
+// DADOS DEFAULT — Palavras (fallback)
+// ============================================
+const DEFAULT_WORDS = [
+    { "id": 1, "word": "a", "phrase": "He bought a new car last week.", "meaning": "um/uma", "translation": "Ele comprou um carro novo na semana passada." },
+    { "id": 2, "word": "abandon", "phrase": "They had to abandon the project due to lack of money.", "meaning": "abandonar", "translation": "Eles tiveram que abandonar o projeto por falta de dinheiro." },
+    { "id": 3, "word": "ability", "phrase": "She has the ability to learn new languages quickly.", "meaning": "habilidade", "translation": "Ela tem a habilidade de aprender novos idiomas rapidamente." },
+    { "id": 4, "word": "able", "phrase": "He was able to finish the work before noon.", "meaning": "capaz", "translation": "Ele foi capaz de terminar o trabalho antes do meio-dia." },
+    { "id": 5, "word": "abortion", "phrase": "The law about abortion is still debated in many countries.", "meaning": "aborto", "translation": "A lei sobre o aborto ainda é debatida em muitos países." },
+    { "id": 6, "word": "about", "phrase": "We talked about the trip for almost two hours.", "meaning": "sobre", "translation": "Nós conversamos sobre a viagem por quase duas horas." },
+    { "id": 7, "word": "above", "phrase": "The airplane was flying above the clouds.", "meaning": "acima", "translation": "O avião estava voando acima das nuvens." },
+    { "id": 8, "word": "abroad", "phrase": "She plans to study abroad next year.", "meaning": "no exterior", "translation": "Ela planeja estudar no exterior no próximo ano." },
+    { "id": 9, "word": "absence", "phrase": "His absence from the meeting was noticed by everyone.", "meaning": "ausência", "translation": "A ausência dele na reunião foi notada por todos." },
+    { "id": 10, "word": "absolute", "phrase": "The room was in absolute silence during the exam.", "meaning": "absoluto", "translation": "A sala estava em silêncio absoluto durante a prova." },
+    { "id": 11, "word": "absolutely", "phrase": "I absolutely agree with your opinion on this matter.", "meaning": "absolutamente", "translation": "Eu concordo absolutamente com sua opinião sobre este assunto." },
+    { "id": 12, "word": "absorb", "phrase": "The sponge can absorb a lot of water.", "meaning": "absorver", "translation": "A esponja pode absorver muita água." },
+    { "id": 13, "word": "abuse", "phrase": "The government created new laws to prevent animal abuse.", "meaning": "abuso", "translation": "O governo criou novas leis para prevenir o abuso animal." },
+    { "id": 14, "word": "academic", "phrase": "She has a strong academic background in mathematics.", "meaning": "acadêmico", "translation": "Ela tem uma forte formação acadêmica em matemática." },
+    { "id": 15, "word": "accept", "phrase": "He decided to accept the job offer in another city.", "meaning": "aceitar", "translation": "Ele decidiu aceitar a oferta de emprego em outra cidade." },
+    { "id": 16, "word": "access", "phrase": "Students have free access to the library every day.", "meaning": "acesso", "translation": "Os alunos têm acesso gratuito à biblioteca todos os dias." },
+    { "id": 17, "word": "accident", "phrase": "There was a car accident on the highway this morning.", "meaning": "acidente", "translation": "Houve um acidente de carro na rodovia esta manhã." },
+    { "id": 18, "word": "accompany", "phrase": "Her mother will accompany her to the doctor tomorrow.", "meaning": "acompanhar", "translation": "A mãe dela vai acompanhá-la ao médico amanhã." },
+    { "id": 19, "word": "accomplish", "phrase": "We can accomplish great things if we work together.", "meaning": "realizar", "translation": "Podemos realizar grandes coisas se trabalharmos juntos." },
+    { "id": 20, "word": "according", "phrase": "According to the news, the storm will arrive tonight.", "meaning": "de acordo", "translation": "De acordo com as notícias, a tempestade chegará esta noite." }
+];
+
+const DEFAULT_CONVERSATIONS = [
+    {
+        id: 1, title: "Tom gets sick",
+        lines: [
+            { en: "Sarah gets some medicine for her son.", pt: "Sarah busca remédio para seu filho." },
+            { en: "Sarah has two small children.", pt: "Sarah tem duas crianças pequenas." },
+            { en: "A girl of five and a boy of two.", pt: "Uma menina de cinco e um menino de dois." },
+            { en: "One evening her little boy Tom gets sick.", pt: "Uma noite, seu filho pequeno Tom fica doente." },
+            { en: "He has some severe pain in his ears.", pt: "Ele tem fortes dores nos ouvidos." },
+            { en: "He lies in his bed and cries.", pt: "Ele está deitado na cama chorando." },
+            { en: "Sarah is alone.", pt: "Sarah está sozinha." },
+            { en: "Her husband is in Scotland.", pt: "Seu marido está na Escócia." },
+            { en: "She is very nervous.", pt: "Ela está muito nervosa." },
+            { en: "She calls and talks to an on-call doctor.", pt: "Ela liga e fala com um médico de plantão." }
+        ]
+    },
+    {
+        id: 2, title: "The doctor arrives",
+        lines: [
+            { en: "An hour later the doctor arrives.", pt: "Uma hora depois, o médico chega." },
+            { en: "He looks at the little boy.", pt: "Ele examina o menino pequeno." },
+            { en: "Sarah sits with him while the doctor examines him.", pt: "Sarah senta com ele enquanto o médico o examina." },
+            { en: "Tom has an ear infection.", pt: "Tom tem infecção no ouvido." },
+            { en: "The doctor gives him some painkillers.", pt: "O médico lhe dá um analgésico." },
+            { en: "He asks for his health insurance card.", pt: "Ele pede o cartão de seguro saúde dele." },
+            { en: "Sarah gives it to him.", pt: "Sarah dá a ele." },
+            { en: "He sits down and writes a prescription.", pt: "Ele se senta e escreve uma receita." },
+            { en: "Tom needs some ear drops and some penicillin.", pt: "Tom precisa de gotas para os ouvidos e penicilina." },
+            { en: "Sarah gets his medicine at the pharmacy.", pt: "Sarah busca o remédio dele na farmácia." }
+        ]
+    },
+    {
+        id: 3, title: "Home again",
+        lines: [
+            { en: "Sarah comes home with the medicine.", pt: "Sarah volta para casa com o remédio." },
+            { en: "Tom is sitting up in bed.", pt: "Tom está sentado na cama." },
+            { en: "He has taken the ear drops.", pt: "Ele já tomou as gotas para os ouvidos." },
+            { en: "The pain is beginning to subside.", pt: "As dores estão começando a diminuir." },
+            { en: "Sarah gives him a cup of warm tea.", pt: "Sarah dá a ele uma xícara de chá quente." },
+            { en: "Tom smiles and says thank you.", pt: "Tom sorri e agradece." },
+            { en: "Sarah is relieved.", pt: "Sarah está aliviada." },
+            { en: "She calls her husband in Scotland.", pt: "Ela liga para o marido na Escócia." },
+            { en: "He is glad to hear that Tom is feeling better.", pt: "Ele está feliz em ouvir que Tom está melhor." },
+            { en: "Sarah lies down on the sofa and rests.", pt: "Sarah se deita no sofá e descansa." }
+        ]
+    }
+];
+
+const PAUSE_BETWEEN_SENTENCES_MS = 4000;
+
+// ============================================
+// ESTADO
+// ============================================
+let vocabulary = [];
+let CONVERSATION_TEXTS = [];
+let currentMode = 'memorize';
+const ITEMS_PER_PAGE = 10;
+
+let currentPage = 1;
+let practiceIndex = 0;
+let practiceAnswered = false;
+let practiceTranslationVisible = false;
+let conversationIndex = 0;
+let conversationTranslationVisible = false;
+let currentAudio = null;
+let isPlayingAll = false;
+let audioSessionId = 0; // FIX: token para invalidar cadeias antigas de playNext
+
+// ============================================
+// CARREGAR DADOS
+// ============================================
+async function loadVocabulary() {
+    try {
+        const response = await fetch('assets/palavras.json');
+        if (!response.ok) throw new Error('Arquivo não encontrado');
+        const data = await response.json();
+        if (data.vocabulary && data.vocabulary.length > 0) {
+            vocabulary = data.vocabulary;
+            console.log(`✅ Carregadas ${vocabulary.length} palavras do JSON`);
+            return;
+        }
+        throw new Error('JSON vazio');
+    } catch (error) {
+        console.log('📦 Usando dados default de palavras');
+        vocabulary = DEFAULT_WORDS;
+    }
+    if (!vocabulary || vocabulary.length === 0) vocabulary = DEFAULT_WORDS;
+}
+
+async function loadConversations() {
+    try {
+        const response = await fetch('assets/conversacao.json');
+        if (!response.ok) throw new Error('Arquivo não encontrado');
+        const data = await response.json();
+        if (data.texts && data.texts.length > 0) {
+            CONVERSATION_TEXTS = data.texts;
+            console.log(`✅ Carregados ${CONVERSATION_TEXTS.length} textos`);
+            return;
+        }
+        throw new Error('JSON vazio');
+    } catch (error) {
+        console.log('📦 Usando dados default de conversação');
+        CONVERSATION_TEXTS = DEFAULT_CONVERSATIONS;
+    }
+    if (!CONVERSATION_TEXTS || CONVERSATION_TEXTS.length === 0) CONVERSATION_TEXTS = DEFAULT_CONVERSATIONS;
+}
+
+// ============================================
+// HELPERS DE PAGINAÇÃO
+// ============================================
+function getTotalPages() {
+    return Math.max(1, Math.ceil(vocabulary.length / ITEMS_PER_PAGE));
+}
+function getPageWords(pageNumber) {
+    const start = (pageNumber - 1) * ITEMS_PER_PAGE;
+    const end = Math.min(start + ITEMS_PER_PAGE, vocabulary.length);
+    return vocabulary.slice(start, end);
+}
+function clampPage(value, total) {
+    if (isNaN(value)) return 1;
+    return Math.min(Math.max(1, value), total);
+}
+
+// ============================================
+// PAGER GENÉRICO
+// ============================================
+function getPagerState(mode) {
+    if (mode === 'memorize') {
+        return {
+            total: getTotalPages(), current: currentPage,
+            inputId: 'memorizePageInput', prevBtnId: 'memorizePrevBtn',
+            nextBtnId: 'memorizeNextBtn', infoId: 'memorizePageInfo',
+            unitLabel: 'Página'
+        };
+    }
+    if (mode === 'practice') {
+        return {
+            total: Math.max(1, vocabulary.length), current: practiceIndex + 1,
+            inputId: 'practicePageInput', prevBtnId: 'practicePrevPageBtn',
+            nextBtnId: 'practiceNextPageBtn', infoId: 'practicePageInfo',
+            unitLabel: 'Palavra'
+        };
+    }
+    return {
+        total: Math.max(1, CONVERSATION_TEXTS.length), current: conversationIndex + 1,
+        inputId: 'conversationPageInput', prevBtnId: 'conversationPrevBtn',
+        nextBtnId: 'conversationNextBtn', infoId: 'conversationPageInfo',
+        unitLabel: 'Texto'
+    };
+}
+
+function syncPager(mode) {
+    const s = getPagerState(mode);
+    const input = document.getElementById(s.inputId);
+    const prevBtn = document.getElementById(s.prevBtnId);
+    const nextBtn = document.getElementById(s.nextBtnId);
+    const info = document.getElementById(s.infoId);
+    if (!input) return;
+
+    if (document.activeElement !== input) input.value = s.current;
+    input.max = s.total;
+    info.textContent = `${s.unitLabel} ${s.current} de ${s.total}`;
+    if (prevBtn) prevBtn.disabled = (s.current <= 1);
+    if (nextBtn) nextBtn.disabled = (s.current >= s.total);
+}
+
+function setPageForMode(mode, page) {
+    const s = getPagerState(mode);
+    const target = clampPage(page, s.total);
+
+    if (mode === 'memorize') {
+        currentPage = target;
+        renderMemorize();
+    } else if (mode === 'practice') {
+        practiceIndex = target - 1;
+        renderPractice();
+    } else if (mode === 'conversation') {
+        stopAllAudio();
+        conversationIndex = target - 1;
+        renderConversation();
+    }
+}
+
+function goToTypedPage(mode) {
+    const s = getPagerState(mode);
+    const input = document.getElementById(s.inputId);
+    const typed = parseInt(input.value, 10);
+    if (isNaN(typed)) { input.value = s.current; return; }
+    setPageForMode(mode, typed);
+    input.blur();
+}
+
+function onPagerInputChange(mode) {
+    const s = getPagerState(mode);
+    const input = document.getElementById(s.inputId);
+    const typed = parseInt(input.value, 10);
+    if (isNaN(typed)) { input.value = s.current; return; }
+    const target = clampPage(typed, s.total);
+    input.value = target;
+    if (target !== s.current) setPageForMode(mode, target);
+}
+
+function handlePagerKeydown(e, mode) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        goToTypedPage(mode);
+    }
+}
+
+// ============================================
+// CONTROLE DE ÁUDIO
+// ============================================
+function stopAllAudio() {
+    audioSessionId++; // FIX: invalida qualquer cadeia de playNext em andamento
+    if (currentAudio) { speechSynthesis.cancel(); currentAudio = null; }
+    isPlayingAll = false;
+    const playAllBtn = document.querySelector('.play-all');
+    if (playAllBtn) playAllBtn.textContent = '▶️ Ouvir Tudo';
+    document.querySelectorAll('.line-audio').forEach(el => el.classList.remove('playing'));
+    document.querySelectorAll('.conversation-line').forEach(el => el.classList.remove('active'));
+}
+
+// ============================================
+// MODO MEMORIZAR
+// ============================================
+function renderMemorize() {
+    const totalPages = getTotalPages();
+    const container = document.getElementById('memorizeList');
+    currentPage = clampPage(currentPage, totalPages);
+    const pageWords = getPageWords(currentPage);
+    container.innerHTML = '';
+
+    if (pageWords.length === 0) {
+        container.innerHTML = `<div class="empty-range">Nenhuma palavra nesta página.</div>`;
+    } else {
+        pageWords.forEach(w => {
+            const div = document.createElement('div');
+            div.className = 'word-card';
+            div.innerHTML = `
+                <span class="english">${escapeHtml(w.word)}</span>
+                <span class="portuguese">${escapeHtml(w.meaning)}</span>
+                <button class="audio-btn" onclick="playWordAudio('${escapeAttr(w.word)}')" aria-label="Ouvir ${escapeAttr(w.word)}">🔊</button>
+            `;
+            container.appendChild(div);
+        });
+    }
+    container.scrollTop = 0;
+    syncPager('memorize');
+}
+
+function prevMemorizePage() { if (currentPage > 1) { currentPage--; renderMemorize(); } }
+function nextMemorizePage() { if (currentPage < getTotalPages()) { currentPage++; renderMemorize(); } }
+
+// ============================================
+// MODO PRATICAR
+// ============================================
+function getPracticeWord() {
+    return vocabulary[practiceIndex] || vocabulary[0];
+}
+
+function escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function getBlankedSentence(word) {
+    if (!word) return { prefix: '', blank: '_______', suffix: '' };
+    const phrase = word.phrase;
+    const target = word.word;
+    const regex = new RegExp('\\b' + escapeRegex(target) + '\\b', 'i');
+    const match = phrase.match(regex);
+    if (match) {
+        const start = match.index;
+        const end = start + match[0].length;
+        return { prefix: phrase.substring(0, start), blank: match[0], suffix: phrase.substring(end) };
+    }
+    return { prefix: phrase + ' ', blank: target, suffix: '' };
+}
+
+function generatePracticeOptions(correctWord) {
+    const allWords = [...new Set(vocabulary.map(w => w.word))];
+    const options = [correctWord];
+    const shuffled = allWords.filter(w => w !== correctWord).sort(() => Math.random() - 0.5);
+    for (let i = 0; i < shuffled.length && options.length < 4; i++) {
+        if (!options.includes(shuffled[i])) options.push(shuffled[i]);
+    }
+    while (options.length < 4) options.push('---');
+    return options.sort(() => Math.random() - 0.5);
+}
+
+function updatePracticeOptionsVisibility() {
+    const optionsEl = document.getElementById('practiceOptions');
+    const translationEl = document.getElementById('practiceTranslation');
+    const revealBtn = document.getElementById('practiceRevealBtn');
+    if (practiceTranslationVisible) {
+        optionsEl.classList.add('hidden');
+        translationEl.classList.add('open');
+        revealBtn.textContent = '📖 Fechar';
+        revealBtn.classList.add('active');
+    } else {
+        optionsEl.classList.remove('hidden');
+        translationEl.classList.remove('open');
+        revealBtn.textContent = '📖 Tradução';
+        revealBtn.classList.remove('active');
+    }
+}
+
+function renderPractice() {
+    const word = getPracticeWord();
+    if (!word) return;
+
+    const blanked = getBlankedSentence(word);
+    document.getElementById('practicePrefix').textContent = blanked.prefix;
+    const blankEl = document.getElementById('practiceBlank');
+    blankEl.textContent = '_______';
+    blankEl.className = 'blank';
+    document.getElementById('practiceSuffix').textContent = blanked.suffix;
+
+    document.getElementById('practicePt').textContent = word.translation || word.meaning;
+    document.getElementById('practiceEn').textContent = word.phrase;
+    document.getElementById('practiceMeaning').textContent = `${word.word} = ${word.meaning}`;
+
+    const options = generatePracticeOptions(word.word);
+    const container = document.getElementById('practiceOptions');
+    container.innerHTML = '';
+    options.forEach((opt) => {
+        const btn = document.createElement('button');
+        btn.textContent = opt;
+        btn.dataset.value = opt;
+        btn.addEventListener('click', () => selectPracticeOption(btn, word.word));
+        container.appendChild(btn);
+    });
+
+    const feedback = document.getElementById('practiceFeedback');
+    feedback.className = 'practice-feedback';
+    feedback.style.display = 'none';
+    feedback.textContent = '';
+
+    practiceTranslationVisible = false;
+    updatePracticeOptionsVisibility();
+    practiceAnswered = false;
+    syncPager('practice');
+}
+
+function selectPracticeOption(btn, correctWord) {
+    if (practiceAnswered) return;
+    const selected = btn.dataset.value;
+    const isCorrect = selected.toLowerCase() === correctWord.toLowerCase();
+    const allBtns = document.querySelectorAll('#practiceOptions button');
+    allBtns.forEach(b => b.disabled = true);
+
+    const feedback = document.getElementById('practiceFeedback');
+    const blankEl = document.getElementById('practiceBlank');
+
+    if (isCorrect) {
+        btn.classList.add('correct');
+        feedback.className = 'practice-feedback correct';
+        feedback.style.display = 'block';
+        feedback.textContent = '✅ Correto! 🎉';
+        blankEl.textContent = correctWord;
+        blankEl.className = 'blank correct';
+    } else {
+        btn.classList.add('wrong');
+        allBtns.forEach(b => {
+            if (b.dataset.value.toLowerCase() === correctWord.toLowerCase()) b.classList.add('show-correct');
+        });
+        feedback.className = 'practice-feedback wrong';
+        feedback.style.display = 'block';
+        feedback.textContent = `❌ A resposta correta é "${correctWord}"`;
+        blankEl.textContent = correctWord;
+        blankEl.className = 'blank wrong';
+    }
+    practiceAnswered = true;
+}
+
+function prevPractice() { if (practiceIndex > 0) { practiceIndex--; renderPractice(); } }
+
+function nextPractice() {
+    if (practiceIndex < vocabulary.length - 1) {
+        practiceIndex++;
+        renderPractice();
+    } else {
+        showCompletionFeedback('🎉 Você completou todas as palavras!');
+        practiceIndex = 0;
+        renderPractice();
+    }
+}
+
+function prevPracticePage() { prevPractice(); }
+function nextPracticePage() { nextPractice(); }
+
+function togglePracticeTranslation() {
+    practiceTranslationVisible = !practiceTranslationVisible;
+    updatePracticeOptionsVisibility();
+}
+
+// ============================================
+// MODO CONVERSAÇÃO
+// ============================================
+function renderConversation() {
+    if (!CONVERSATION_TEXTS.length) {
+        document.getElementById('conversationText').innerHTML =
+            '<div class="empty-range">Nenhum texto de conversação disponível.</div>';
+        document.getElementById('convTitle').textContent = '📖 —';
+        document.getElementById('convBadge').textContent = '0 / 0';
+        syncPager('conversation');
+        return;
+    }
+
+    const text = CONVERSATION_TEXTS[conversationIndex] || CONVERSATION_TEXTS[0];
+    const container = document.getElementById('conversationText');
+
+    document.getElementById('convTitle').textContent = `📖 ${text.title}`;
+    document.getElementById('convBadge').textContent = `${conversationIndex + 1} / ${CONVERSATION_TEXTS.length}`;
+
+    container.innerHTML = '';
+    text.lines.forEach((line, index) => {
+        const div = document.createElement('div');
+        div.className = 'conversation-line';
+        div.dataset.index = index;
+        div.innerHTML = `
+            <span class="english-text">${escapeHtml(line.en)}</span>
+            <span class="portuguese-text ${conversationTranslationVisible ? 'show' : ''}">${escapeHtml(line.pt)}</span>
+            <button class="line-audio" data-index="${index}" onclick="playConversationLine(${index})" aria-label="Ouvir frase">🔊</button>
+        `;
+        container.appendChild(div);
+    });
+
+    container.scrollTop = 0;
+
+    const btn = document.getElementById('convToggleTranslation');
+    if (conversationTranslationVisible) {
+        btn.textContent = '🇧🇷 Ocultar';
+        btn.classList.add('active');
+    } else {
+        btn.textContent = '🇧🇷 Tradução';
+        btn.classList.remove('active');
+    }
+    syncPager('conversation');
+}
+
+function playConversationLine(index) {
+    const text = CONVERSATION_TEXTS[conversationIndex];
+    if (!text || !text.lines[index]) return;
+    if (currentAudio) { speechSynthesis.cancel(); currentAudio = null; }
+    isPlayingAll = false;
+    audioSessionId++; // FIX: invalida cadeia de playNext se houver
+
+    document.querySelectorAll('.conversation-line').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.line-audio').forEach(el => el.classList.remove('playing'));
+
+    const lines = document.querySelectorAll('.conversation-line');
+    if (lines[index]) {
+        lines[index].classList.add('active');
+        const audioBtn = lines[index].querySelector('.line-audio');
+        if (audioBtn) audioBtn.classList.add('playing');
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text.lines[index].en);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.75;
+    currentAudio = utterance;
+
+    utterance.onend = () => {
+        document.querySelectorAll('.line-audio').forEach(el => el.classList.remove('playing'));
+        currentAudio = null;
+    };
+    utterance.onerror = () => {
+        document.querySelectorAll('.line-audio').forEach(el => el.classList.remove('playing'));
+        currentAudio = null;
+    };
+    speechSynthesis.speak(utterance);
+}
+
+function playAllConversation() {
+    const text = CONVERSATION_TEXTS[conversationIndex];
+    if (!text) return;
+
+    // Se já está tocando, para tudo
+    if (isPlayingAll) { stopAllAudio(); return; }
+
+    // FIX: cria uma nova sessão de áudio (invalida qualquer anterior)
+    const mySession = ++audioSessionId;
+
+    isPlayingAll = true;
+    document.querySelector('.play-all').textContent = '⏹️ Parar';
+    let index = 0;
+
+    function playNext() {
+        // FIX: se a sessão mudou (trocou página, parou, abriu info), aborta
+        if (mySession !== audioSessionId) return;
+        if (!isPlayingAll || index >= text.lines.length) {
+            if (mySession === audioSessionId) stopAllAudio();
+            return;
+        }
+
+        const lines = document.querySelectorAll('.conversation-line');
+        lines.forEach(el => el.classList.remove('active'));
+        if (lines[index]) {
+            lines[index].classList.add('active');
+            const audioBtn = lines[index].querySelector('.line-audio');
+            if (audioBtn) audioBtn.classList.add('playing');
+        }
+
+        const utterance = new SpeechSynthesisUtterance(text.lines[index].en);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.75;
+        currentAudio = utterance;
+
+        const advance = () => {
+            // FIX: valida sessão antes de agendar o próximo
+            if (mySession !== audioSessionId) return;
+            index++;
+            if (mySession === audioSessionId) {
+                setTimeout(playNext, PAUSE_BETWEEN_SENTENCES_MS);
+            }
+        };
+
+        utterance.onend = advance;
+        utterance.onerror = advance;
+        speechSynthesis.speak(utterance);
+    }
+
+    playNext();
+}
+
+function toggleConversationTranslation() {
+    conversationTranslationVisible = !conversationTranslationVisible;
+    renderConversation();
+}
+
+function prevConversation() {
+    if (conversationIndex > 0) { stopAllAudio(); conversationIndex--; renderConversation(); }
+}
+
+function nextConversation() {
+    if (conversationIndex < CONVERSATION_TEXTS.length - 1) {
+        stopAllAudio(); conversationIndex++; renderConversation();
+    } else {
+        showCompletionFeedback('🎉 Você completou todos os textos!');
+        conversationIndex = 0;
+        stopAllAudio();
+        renderConversation();
+    }
+}
+
+// ============================================
+// ÁUDIO
+// ============================================
+function playWordAudio(word) {
+    audioSessionId++; // FIX: invalida cadeia de playNext
+    if (currentAudio) { speechSynthesis.cancel(); currentAudio = null; }
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.8;
+    speechSynthesis.speak(utterance);
+    currentAudio = utterance;
+}
+
+function playPracticePhrase() {
+    const word = getPracticeWord();
+    if (!word) return;
+    audioSessionId++; // FIX: invalida cadeia de playNext
+    if (currentAudio) { speechSynthesis.cancel(); currentAudio = null; }
+    const utterance = new SpeechSynthesisUtterance(word.phrase);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.75;
+    speechSynthesis.speak(utterance);
+    currentAudio = utterance;
+}
+
+// ============================================
+// UTILITÁRIOS
+// ============================================
+function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function escapeAttr(str) { return escapeHtml(str); }
+
+function showCompletionFeedback(msg) {
+    const fb = document.getElementById('practiceFeedback');
+    if (fb && currentMode === 'practice') {
+        fb.className = 'practice-feedback correct';
+        fb.style.display = 'block';
+        fb.textContent = msg;
+        setTimeout(() => { fb.style.display = 'none'; }, 2500);
+    }
+    const convText = document.getElementById('conversationText');
+    if (convText && currentMode === 'conversation') {
+        const div = document.createElement('div');
+        div.className = 'empty-range';
+        div.style.cssText = 'background:#eaf5e0;color:#2d6b17;font-weight:700;';
+        div.textContent = msg;
+        convText.prepend(div);
+        setTimeout(() => div.remove(), 2500);
+    }
+}
+
+// ============================================
+// PAINEL DE INFORMAÇÕES
+// ============================================
+function openInfo() {
+    const overlay = document.getElementById('infoOverlay');
+    const panel = overlay.querySelector('.info-panel');
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    stopAllAudio();
+    // FIX: sempre abre do topo
+    if (panel) panel.scrollTop = 0;
+}
+
+function closeInfo() {
+    const overlay = document.getElementById('infoOverlay');
+    const panel = overlay.querySelector('.info-panel');
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+    // FIX: reseta o scroll para a próxima abertura
+    if (panel) panel.scrollTop = 0;
+}
+
+// ============================================
+// MUDAR MODO
+// ============================================
+function switchMode(mode) {
+    if (mode === currentMode) return;
+    stopAllAudio();
+    currentMode = mode;
+    document.getElementById('memorizeContainer').classList.toggle('active', mode === 'memorize');
+    document.getElementById('practiceContainer').classList.toggle('active', mode === 'practice');
+    document.getElementById('conversationContainer').classList.toggle('active', mode === 'conversation');
+    document.getElementById('btnMemorize').classList.toggle('active', mode === 'memorize');
+    document.getElementById('btnPractice').classList.toggle('active', mode === 'practice');
+    document.getElementById('btnConversation').classList.toggle('active', mode === 'conversation');
+
+    if (mode === 'memorize') renderMemorize();
+    else if (mode === 'practice') renderPractice();
+    else if (mode === 'conversation') renderConversation();
+}
+
+// ============================================
+// TECLADO
+// ============================================
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { closeInfo(); return; }
+
+    const tag = document.activeElement && document.activeElement.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+
+    if (document.getElementById('infoOverlay').classList.contains('open')) return;
+
+    if (currentMode === 'memorize') {
+        if (e.key === 'ArrowLeft') prevMemorizePage();
+        else if (e.key === 'ArrowRight') nextMemorizePage();
+    } else if (currentMode === 'practice') {
+        if (e.key === 'ArrowLeft') prevPractice();
+        else if (e.key === 'ArrowRight') nextPractice();
+        else if (e.key === ' ' || e.key === 'Space') {
+            e.preventDefault();
+            const firstBtn = document.querySelector('#practiceOptions button:not(:disabled)');
+            if (firstBtn) firstBtn.click();
+        } else if (e.key === 't' || e.key === 'T') togglePracticeTranslation();
+        else if (e.key === 'p' || e.key === 'P') playPracticePhrase();
+        else if (['1', '2', '3', '4'].includes(e.key)) {
+            const btns = document.querySelectorAll('#practiceOptions button:not(:disabled)');
+            const idx = parseInt(e.key) - 1;
+            if (btns[idx]) btns[idx].click();
+        }
+    } else if (currentMode === 'conversation') {
+        if (e.key === 'ArrowLeft') prevConversation();
+        else if (e.key === 'ArrowRight') nextConversation();
+        else if (e.key === 't' || e.key === 'T') toggleConversationTranslation();
+        else if (e.key === 'p' || e.key === 'P') {
+            const firstLine = document.querySelector('.conversation-line:not(.active)');
+            if (firstLine) {
+                const index = parseInt(firstLine.dataset.index);
+                if (!isNaN(index)) playConversationLine(index);
+            } else playConversationLine(0);
+        } else if (e.key === 'a' || e.key === 'A') playAllConversation();
+    }
+});
+
+window.addEventListener('beforeunload', () => { if (currentAudio) speechSynthesis.cancel(); });
+
+// ============================================
+// INICIALIZAÇÃO
+// ============================================
+async function init() {
+    await loadVocabulary();
+    await loadConversations();
+    currentPage = 1;
+    practiceIndex = 0;
+    conversationIndex = 0;
+    renderMemorize();
+    renderPractice();
+    renderConversation();
+    console.log(`🚀 FalaAí English iniciado! ${vocabulary.length} palavras, ${CONVERSATION_TEXTS.length} textos`);
+}
+
+init();
+</script>
+</body>
+</html>
